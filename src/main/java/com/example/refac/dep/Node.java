@@ -1,6 +1,6 @@
 package com.example.refac.dep;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author: lilingj
@@ -22,6 +22,8 @@ public class Node {
     public double TH_BALANCE;
     public boolean hasNonStableDep;
     public boolean hasHubDep;
+
+    public Set<Node> nxtNodes = new HashSet<>();
     public Node(int id, String className, double ADN, double EDN, double TH_UDN) {
         this.id = id;
         this.className = className;
@@ -29,10 +31,10 @@ public class Node {
         this.EDN = EDN;
         this.TH_BALANCE = (ADN + EDN) / 2.0;
         this.TH_UDN = TH_UDN;
-        this.I = (double) EDN / (ADN + EDN);
+        this.I = EDN / (ADN + EDN);
     }
 
-    public void init2(double UDN, double TH_ADN, double TH_EDN) {
+    public void init2(double UDN, double TH_ADN, double TH_EDN, Set<Node> nxtNodes) {
 //        double udn = 0;
 //        for (Node nxtNode : nxtNodes) {
 //            if (this.I > nxtNode.I) {
@@ -42,6 +44,7 @@ public class Node {
         this.UDN = UDN;
         this.hasNonStableDep = ((double) this.UDN / this.EDN) > this.TH_UDN;
         this.hasHubDep = (this.ADN > TH_ADN && this.EDN > TH_EDN && Math.abs(this.ADN - this.EDN) < this.TH_BALANCE);
+        this.nxtNodes = nxtNodes;
     }
 
 

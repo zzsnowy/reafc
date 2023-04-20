@@ -105,7 +105,7 @@ public class CountEdClassNumberHub {
     }
     private static int countDe(String pro, Set<String> set) throws IOException {
         String path = "/Users/zzsnowy/Desktop/fighting/depends-0.9.7/lit/" + pro + "-file.json";
-        DepSniffer.StatsInfo info = DepSniffer.getStatsInfo(new File(path));
+        DepSniffer.StatsInfo info = new DepSniffer().getStatsInfo(new File(path));
         List<Node> cd = info.hublikeNodes;
 //        return info.allNodes.size();
         for(Node node : cd){
