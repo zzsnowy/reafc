@@ -32,10 +32,11 @@ public class CheckEs {
 
         in =  new FileInputStream( "io" + File.separator + "eOmap.txt" );
         os =  new  ObjectInputStream(in);
-        Map<String, List<RefMethodNode>> eMmap = (Map<String, List<RefMethodNode>>) os.readObject();
-//        CommitUtil.getFineCommitIdForEs_M(eMmap);
-//        printMrMap(eMmap);
-        countMrCor_C(eMmap);
+        Map<String, List<RefMethodNode>> eOmap = (Map<String, List<RefMethodNode>>) os.readObject();
+//        CommitUtil.getFineCommitIdForEs_M(eOmap);
+//        printMrMap(eOmap);
+        countMrCor_C(eOmap);
+//        countMrCor_O(eOmap);
 
         in =  new FileInputStream( "io" + File.separator + "mOmap.txt" );
         os =  new  ObjectInputStream(in);
@@ -43,10 +44,61 @@ public class CheckEs {
 //        CommitUtil.getFineCommitIdForEs_M(mOmap);
 //        printMrMap(mOmap);
         countMrCor_C(mOmap);
+//        countMrCor_O(mOmap);
 
+    }
 
+    private static void countMrCor_O(Map<String, List<RefMethodNode>> map) throws IOException {
+        int sum = 0;
+        int total = 0;
+        for (Map.Entry<String, List<RefMethodNode>> entry : map.entrySet()) {
+            String commitId = entry.getKey();
+            List<RefMethodNode> list = entry.getValue();
+            for (RefMethodNode refMethodNode: list){
+                total ++;
+                String src = refMethodNode.getSrc();
+                String dest = refMethodNode.getDest();
+                if(coverMethod(commitId, src) || coverMethod(commitId, dest)){
+                    sum ++;
+//                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
 
+                } else {
+                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
+                }
+            }
+        }
+        System.out.println(total + " " + sum);
+    }
 
+    private static boolean coverMethod(String commitId, String m) throws IOException {
+        String lastCommitId = CommitUtil.getLastCommitId(commitId);
+        String lFineCommidId = CommitUtil.getFineCommitId(lastCommitId);
+        String c = m.split("_")[0];
+        String c_ = c.replaceAll("\\.","_");
+        String inter_c_ = c.split("\\.")[c.split("\\.").length - 2] + "/\\[CN\\]/" + c.split("\\.")[c.split("\\.").length - 1];
+        String inter_c_short = c.split("\\.")[c.split("\\.").length - 2] + "\\.java/\\[CN\\]/" + c.split("\\.")[c.split("\\.").length - 1];
+//        System.out.println(c_);
+//        System.out.println(inter_c_);
+//        System.out.println(inter_c_short);
+        String method =  m.split("_")[1];
+        //        System.out.println(c_);
+//        System.out.println(inter_c_);
+        String pathname = "/Users/zzsnowy/Desktop/fighting/es1-0.4/litemall/litemall_" + lFineCommidId + ".txt" ;
+        File filename = new File(pathname);
+        InputStreamReader reader = new InputStreamReader(
+                new FileInputStream(filename));
+        BufferedReader br = new BufferedReader(reader);
+        String line = br.readLine();
+        while (line != null) {
+            if (line.matches("[\\s\\S]*" + c_ + "[\\s\\S]*" + method + "[\\s\\S]*")
+                    || line.matches("[\\s\\S]*" + inter_c_ + "[\\s\\S]*" + method + "[\\s\\S]*")
+                    || line.matches("[\\s\\S]*" + inter_c_short + "[\\s\\S]*" + method + "[\\s\\S]*")){
+                return true;
+            }
+            line = br.readLine();
+        }
+
+        return false;
     }
 
     private static void countMrCor_C(Map<String, List<RefMethodNode>> map) throws IOException {
@@ -62,8 +114,12 @@ public class CheckEs {
                 String dest = refMethodNode.getDest().split("_")[0];
                 if(coverClass(commitId, src) || coverClass(commitId, dest)){
                     sum ++;
+//                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
+
                 } else {
-                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
+//                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
+                    System.out.println(CommitUtil.getLastCommitId(commitId) + ":"  + src + " " + dest);
+
                 }
             }
         }
@@ -94,7 +150,8 @@ public class CheckEs {
                 if(coverClass(commitId, src) || coverClass(commitId, dest)){
                     sum ++;
                 } else {
-                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
+//                    System.out.println(CommitUtil.getFineCommitId(CommitUtil.getLastCommitId(commitId)) + ":"  + src + " " + dest);
+                    System.out.println(CommitUtil.getLastCommitId(commitId) + ":"  + src + " " + dest);
                 }
             }
         }
@@ -106,11 +163,12 @@ public class CheckEs {
         String lastCommitId = CommitUtil.getLastCommitId(commitId);
         String lFineCommidId = CommitUtil.getFineCommitId(lastCommitId);
         String c_ = c.replaceAll("\\.","_");
-//        System.out.println(c_);
         String inter_c_ = c.split("\\.")[c.split("\\.").length - 2] + "/\\[CN\\]/" + c.split("\\.")[c.split("\\.").length - 1];
-//        System.out.println(c_);
+        String inter_c_short = c.split("\\.")[c.split("\\.").length - 2] + "\\.java/\\[CN\\]/" + c.split("\\.")[c.split("\\.").length - 1];
+
+        //        System.out.println(c_);
 //        System.out.println(inter_c_);
-        String pathname = "/Users/zzsnowy/Desktop/fighting/es/litemall/litemall_" + lFineCommidId + ".txt" ;
+        String pathname = "/Users/zzsnowy/Desktop/fighting/es1-0.4/litemall/litemall_" + lFineCommidId + ".txt" ;
         File filename = new File(pathname);
         InputStreamReader reader = new InputStreamReader(
                 new FileInputStream(filename));
@@ -118,8 +176,12 @@ public class CheckEs {
         String line = br.readLine();
         while (line != null) {
             if (line.matches("[\\s\\S]*" + c_ + "[\\s\\S]*")
-            || line.matches("[\\s\\S]*" + inter_c_ + "[\\s\\S]*")){
-                return true;
+            || line.matches("[\\s\\S]*" + inter_c_ + "[\\s\\S]*")
+            || line.matches("[\\s\\S]*" + inter_c_short + "[\\s\\S]*")){
+//                if((Integer.parseInt(line.split("\t")[2]) >= 1 && (Double.parseDouble(line.split("\t")[3]) >= 1))){
+                    return true;
+//                }
+
             }
             line = br.readLine();
         }
