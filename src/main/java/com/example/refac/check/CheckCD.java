@@ -54,7 +54,7 @@ public class CheckCD {
         for (Map.Entry<String, List<RefMethodNode>> entry : map.entrySet()) {
             String commitId = entry.getKey();
             String lastCommitId = CommitUtil.getLastCommitId(commitId);
-            DepSniffer.StatsInfo info = DepSniffer.getStatsInfo(new File("/Users/zzsnowy/Desktop/fighting/depends-0.9.7/lit/" + lastCommitId + "-file.json"));
+            DepSniffer.StatsInfo info = new DepSniffer().getStatsInfo(new File("/Users/zzsnowy/Desktop/fighting/depends-0.9.7/lit/" + lastCommitId + "-file.json"));
             List<Node> cd = info.unstableNodes;
             List<RefMethodNode> list = entry.getValue();
 //            System.out.println("commitID = " + commitId);
@@ -80,7 +80,7 @@ public class CheckCD {
                 for (Map.Entry<String, List<RefClassNode>> entry : map.entrySet()) {
             String commitId = entry.getKey();
             String lastCommitId = CommitUtil.getLastCommitId(commitId);
-            DepSniffer.StatsInfo info = DepSniffer.getStatsInfo(new File("/Users/zzsnowy/Desktop/fighting/depends-0.9.7/lit/" + lastCommitId + "-file.json"));
+            DepSniffer.StatsInfo info = new DepSniffer().getStatsInfo(new File("/Users/zzsnowy/Desktop/fighting/depends-0.9.7/lit/" + lastCommitId + "-file.json"));
             List<Node> cd = info.unstableNodes;
             List<RefClassNode> list = entry.getValue();
 //            System.out.println("commitID = " + commitId);

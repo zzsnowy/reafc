@@ -19,7 +19,10 @@ import java.util.stream.Collectors;
 
 public class DepSniffer {
 
-    public final static double TH_UDN = 0.1;
+    public double TH_UDN = 0.1;
+
+    public double TH_ADN_FAC = 1 / 2;
+    public double TH_EDN_FAC = 1 / 2;
 
     public static class StatsInfo {
         public List<Node> loopDepNodes;
@@ -72,12 +75,20 @@ public class DepSniffer {
         List<Cell> cells;
     }
 
-    public static StatsInfo getStatsInfo(File file) {
+    public DepSniffer(){}
+    public DepSniffer(double thAdnFactory, double thEdnFactory, double thUdn) {
+        this.TH_ADN_FAC = thAdnFactory;
+        this.TH_EDN_FAC = thEdnFactory;
+        this.TH_UDN = thUdn;
+    }
+
+    public StatsInfo getStatsInfo(File file) {
         _JsonClass rawData = getRawData(file);
         Map<Integer, Set<Pair<Integer, Double>>> graph = getGraph(rawData);
         StatsInfo info = genStatsInfo(graph, rawData.variables);
         return info;
     }
+
 
     public static _JsonClass getRawData(File file) {
         String jsonStr = null;
@@ -100,7 +111,7 @@ public class DepSniffer {
         return g;
     }
 
-    private static StatsInfo genStatsInfo(Map<Integer, Set<Pair<Integer, Double>>> g, List<String> nameTable) {
+    private StatsInfo genStatsInfo(Map<Integer, Set<Pair<Integer, Double>>> g, List<String> nameTable) {
         // in and out
         double[] adns = new double[nameTable.size()];
         double[] edns = new double[nameTable.size()];
@@ -124,8 +135,8 @@ public class DepSniffer {
         Arrays.sort(edns);
         int righ = adns.length / 2;
         int left = (adns.length - 1) / 2;
-        double thAdn = adns[adns.length * 1 /4];
-        double thEdn = edns[edns.length * 1 /4];
+        double thAdn = adns[(int)(adns.length * TH_ADN_FAC)];
+        double thEdn = edns[(int)(edns.length * TH_EDN_FAC)];
 //        double thAdn = (adns[left] + adns[righ]) / 2.0;
 //        double thEdn = (edns[left] + edns[righ]) / 2.0;
 //        double thAdn = adns[];
