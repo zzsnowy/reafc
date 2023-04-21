@@ -35,14 +35,8 @@ public class Node {
     }
 
     public void init2(double UDN, double TH_ADN, double TH_EDN, Set<Node> nxtNodes) {
-//        double udn = 0;
-//        for (Node nxtNode : nxtNodes) {
-//            if (this.I > nxtNode.I) {
-//                udn++;
-//            }
-//        }
         this.UDN = UDN;
-        this.hasNonStableDep = ((double) this.UDN / this.EDN) > this.TH_UDN;
+        this.hasNonStableDep = (this.UDN / this.EDN) > this.TH_UDN;
         this.hasHubDep = (this.ADN > TH_ADN && this.EDN > TH_EDN && Math.abs(this.ADN - this.EDN) < this.TH_BALANCE);
         this.nxtNodes = nxtNodes;
     }

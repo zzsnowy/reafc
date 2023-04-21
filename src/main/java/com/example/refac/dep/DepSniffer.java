@@ -143,10 +143,8 @@ public class DepSniffer {
         double[] edns = new double[nameTable.size()];
         List<Node> nodes = new ArrayList<>();
         g.forEach((id, nxtNodes) -> {
-//            edns[id] = nxtNodes.stream().map(Pair::getRight).mapToDouble(x -> x).sum();
             edns[id] = nxtNodes.size();
             nxtNodes.forEach(pair -> {
-//                adns[pair.getLeft()] += pair.getRight();
                 adns[pair.getLeft()] += 1;
             });
         });
@@ -156,24 +154,15 @@ public class DepSniffer {
             nodes.add(node);
         }
         // init2 node
-        // 0 1  2
         Arrays.sort(adns);
         Arrays.sort(edns);
-//        int righ = adns.length / 2;
-//        int left = (adns.length - 1) / 2;
         double thAdn = adns[(int)(adns.length * TH_ADN_FAC)];
         double thEdn = edns[(int)(edns.length * TH_EDN_FAC)];
-//        double thAdn = (adns[left] + adns[righ]) / 2.0;
-//        double thEdn = (edns[left] + edns[righ]) / 2.0;
-//        double thAdn = adns[];
-//        double thEdn = edns[];
-        // udn
         for (Node node : nodes) {
             double udn = 0.0;
             Set<Node> nxtNodes = new HashSet<>();
             for (Pair<Integer, Double> nxtPair : g.getOrDefault(node.id, new HashSet<>())) {
                 int nxtId = nxtPair.getLeft();
-                double w = nxtPair.getRight();
                 Node nxtNode = nodes.get(nxtId);
                 nxtNodes.add(nxtNode);
                 if(node.I < nxtNode.I) {

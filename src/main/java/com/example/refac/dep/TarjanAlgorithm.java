@@ -13,19 +13,37 @@ import java.util.*;
 
 public class TarjanAlgorithm {
     static class RadialData {
+        // edgeSymbol: ['arrow'],
+        //         edgeSymbolSize: 5,
         List<ColorNode> nodes;
-        List<ColorEdge> edges;
+        List<ColorEdge> links;
 
-        public RadialData(List<ColorNode> nodes, List<ColorEdge> edges) {
+        List<Category> categories;
+
+        public RadialData(List<ColorNode> nodes, List<ColorEdge> links, List<Category> categories) {
             this.nodes = nodes;
-            this.edges = edges;
+            this.links = links;
+            this.categories = categories;
         }
+    }
+
+    static class Category {
+        String name;
+
+        public Category(String name) {
+            this.name = name;
+            // this.base = base;
+        }
+
+        // String base;
     }
 
     static class ColorNode {
         String id;
         String name;
-        ItemStyle itemStyle = new ItemStyle();
+        Integer value;
+        Integer category;
+        // ItemStyle itemStyle = new ItemStyle();
 
         static class ItemStyle {
             String color = "red";
@@ -33,10 +51,10 @@ public class TarjanAlgorithm {
     }
 
     static class ColorEdge {
-        String source;
-        String target;
+        Integer source;
+        Integer target;
 
-        public ColorEdge(String source, String target) {
+        public ColorEdge(Integer source, Integer target) {
             this.source = source;
             this.target = target;
         }
@@ -148,8 +166,10 @@ public class TarjanAlgorithm {
 
     private void genRadialData() {
         boolean[] vis = new boolean[colorCount];
+        List<Category> categories = new ArrayList<>();
         List<ColorNode> colorNodes = new ArrayList<>();
         List<ColorEdge> colorEdges = new ArrayList<>();
+        categories.add(new Category("single"));
         for (int color = 0; color < colorCount; color++) {
             var colorNode = new ColorNode();
             colorNode.id = String.valueOf(color);
@@ -157,17 +177,24 @@ public class TarjanAlgorithm {
             colorNode.name = nodes.size() == 1
                     ? "node-" + nodes.get(0)
                     : "loop-" + color + " nodes-" + nodes.size();
-            colorNode.itemStyle.color = nodes.size() == 1
-                    ? ""
-                    : "red";
+            colorNode.value = 1;
+//            colorNode.itemStyle.color = nodes.size() == 1
+//                    ? "green"
+//                    : "red";
+            colorNode.category = nodes.size() == 1
+                    ? 0
+                    : categories.size();
+            if (nodes.size() != 1) {
+                categories.add(new Category("cycle-" + color));
+            }
             colorNodes.add(colorNode);
         }
         this.colorG.forEach((color, nxtColors) -> {
             nxtColors.forEach(nxtColor -> {
-                colorEdges.add(new ColorEdge(String.valueOf(color), String.valueOf(nxtColor)));
+                colorEdges.add(new ColorEdge(color, nxtColor));
             });
         });
-        this.radialData = new RadialData(colorNodes, colorEdges);
+        this.radialData = new RadialData(colorNodes, colorEdges, categories);
     }
 
 //    private void genDagGraph(ColorNode[] colorNodes, boolean[] vis, int color) {
