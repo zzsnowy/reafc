@@ -198,6 +198,10 @@ public class DepSniffer {
         info.nodeIdColorMap = nodeIdColorMap;
         info.colorNodeMap = colorNodeMap;
         info.radialData = tarjanAlgorithm.getRadialData();
+        info.radialData.nodes.forEach(picNode -> {
+            String[] classPath = info.allNodes.get(Integer.parseInt(picNode.id)).className.split("/");
+            picNode.name = classPath[classPath.length - 1];
+        });
 //        if (info.colorDag.size() > 1) {
 //            System.out.println("生成DAG图有多个（" + info.colorDag.size() + "）树！");
 //        }

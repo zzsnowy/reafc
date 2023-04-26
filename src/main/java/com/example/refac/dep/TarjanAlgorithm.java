@@ -1,6 +1,7 @@
 package com.example.refac.dep;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.*;
 
@@ -51,12 +52,12 @@ public class TarjanAlgorithm {
     }
 
     static class ColorEdge {
-        Integer source;
-        Integer target;
+        String source;
+        String target;
 
         public ColorEdge(Integer source, Integer target) {
-            this.source = source;
-            this.target = target;
+            this.source = String.valueOf(source);
+            this.target = String.valueOf(target);
         }
     }
     int[] dfn;
@@ -169,31 +170,37 @@ public class TarjanAlgorithm {
         List<Category> categories = new ArrayList<>();
         List<ColorNode> colorNodes = new ArrayList<>();
         List<ColorEdge> colorEdges = new ArrayList<>();
+        Set<Integer> allNode = getLoopNodes();
         categories.add(new Category("single"));
         for (int color = 0; color < colorCount; color++) {
-            var colorNode = new ColorNode();
-            colorNode.id = String.valueOf(color);
-            var nodes = colorNodeIdMap.getOrDefault(color, new ArrayList<>());
-            colorNode.name = nodes.size() == 1
-                    ? "node-" + nodes.get(0)
-                    : "loop-" + color + " nodes-" + nodes.size();
-            colorNode.value = 1;
-//            colorNode.itemStyle.color = nodes.size() == 1
-//                    ? "green"
-//                    : "red";
-            colorNode.category = nodes.size() == 1
-                    ? 0
-                    : categories.size();
-            if (nodes.size() != 1) {
-                categories.add(new Category("cycle-" + color));
+            var nodeIds = colorNodeIdMap.getOrDefault(color, new ArrayList<>());
+            if (nodeIds.size() == 1) {
+                continue;
             }
-            colorNodes.add(colorNode);
+            for (Integer nodeId : nodeIds) {
+                var colorNode = new ColorNode();
+                colorNode.name = "cycle-" + color + "node-" + nodeId;
+                colorNode.value = 1;
+                colorNode.id = String.valueOf(nodeId);
+                colorNode.category = categories.size();
+                colorNodes.add(colorNode);
+            }
+            categories.add(new Category("cycle-" + color));
         }
-        this.colorG.forEach((color, nxtColors) -> {
-            nxtColors.forEach(nxtColor -> {
-                colorEdges.add(new ColorEdge(color, nxtColor));
+        allNode.forEach(nodeId -> {
+            var nxtNodes = this.g.getOrDefault(nodeId, new HashSet<>());
+            nxtNodes.forEach(nxtPair -> {
+                var nxtNode = nxtPair.getLeft();
+                if (allNode.contains(nxtNode) && this.nodeIdColorMap[nodeId] == this.nodeIdColorMap[nxtNode]) {
+                    colorEdges.add(new ColorEdge(nodeId, nxtNode));
+                }
             });
         });
+//        this.colorG.forEach((color, nxtColors) -> {
+//            nxtColors.forEach(nxtColor -> {
+//                colorEdges.add(new ColorEdge(color, nxtColor));
+//            });
+//        });
         this.radialData = new RadialData(colorNodes, colorEdges, categories);
     }
 
